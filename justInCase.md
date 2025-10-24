@@ -93,3 +93,49 @@ function SingleBook() {
 }
 
 export default SingleBook;
+
+
+Account Component OG useEffect
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        console.log("Token:", token);
+        console.log(
+          "API URL:",
+          `${import.meta.env.VITE_API_BASE_URL}/users/me`
+        );
+
+        if (!token) {
+          setError("No authentication token");
+          setLoading(false);
+          return;
+        }
+
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/users/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+
+        console.log("User response:", response.data);
+
+        setUser(response.data);
+        setBooks(response.data.books || []);
+        setError(null);
+      } catch (err) {
+        console.error("Full error:", err);
+        console.error("Error response:", err.response);
+        setError(`Failed to load account: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [token]);

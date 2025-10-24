@@ -34,6 +34,22 @@ function SingleBook({ token }) {
     fetchBook();
   }, []);
 
+  const handleCheckout = async () => {
+    try {
+      const data = await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/books/${id}`,
+        { available: false },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log(data);
+      if (data.data.book) {
+        setBook(data.data.book);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!book) return <div>Book not found</div>;
@@ -50,8 +66,8 @@ function SingleBook({ token }) {
           </>
         )}
         {token &&
-          (book?.availabe ? (
-            <button>Checkout book</button>
+          (book?.available ? (
+            <button onClick={handleCheckout}>Checkout book</button>
           ) : (
             <p>Book Checked Out</p>
           ))}

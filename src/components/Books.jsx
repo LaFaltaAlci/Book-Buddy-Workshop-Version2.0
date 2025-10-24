@@ -4,6 +4,7 @@ import axios from "axios";
 
 function Books() {
   const [books, setBooks] = useState([]);
+  const [booksToDisplay, setBooksToDisplay] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -20,9 +21,9 @@ function Books() {
           }
         );
 
-     
         if (Array.isArray(response.data)) {
           setBooks(response.data);
+          setBooksToDisplay(response.data);
         } else {
           setError("Unexpected response format");
         }
@@ -41,9 +42,19 @@ function Books() {
   if (error) return <div>Error: {error}</div>;
   if (books.length === 0) return <div>No books found</div>;
 
+  const handleBookSearch = (e) => {
+    const searchResults = books.filter((book) =>
+      book.title.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setBooksToDisplay(searchResults);
+  };
+
   return (
     <div className="book-page">
-      <BookCardList books={books}/>
+      <div>
+        Search For Book: <input type="text" onChange={handleBookSearch} />
+      </div>
+      <BookCardList books={booksToDisplay} />
     </div>
   );
 }
